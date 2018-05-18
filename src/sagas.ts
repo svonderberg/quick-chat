@@ -1,18 +1,16 @@
-import { put, takeEvery, take, call } from 'redux-saga/effects';
+import { put, takeEvery, take, call, select } from 'redux-saga/effects';
 import * as firebase from 'firebase';
 import '@firebase/firestore';
 import ReduxSagaFirebase from 'redux-saga-firebase';
+import { Action } from 'redux-actions';
 import {
+  SET_CHATROOM_ID,
   ON_ADD_MESSAGE,
   REMOTE_UPDATE_MESSAGES,
-  MESSAGES_COLLECTION,
-  CHANGE_MESSAGE_INPUT
+  CHANGE_MESSAGE_INPUT,
+  MESSAGES_PATH
 } from './constants';
-import { Action } from 'redux-actions';
-
-interface OnAddMessageAction extends Action<string> {
-  payload: string;
-}
+import { getChatRoomId } from './selectors';
 
 const firebaseApp = firebase.initializeApp({
   apiKey: 'AIzaSyDj3_C5H-OrosfFgWakDBypMkHcaunyj1A',
@@ -24,22 +22,11 @@ const firebaseApp = firebase.initializeApp({
 });
 const rsf = new ReduxSagaFirebase(firebaseApp, firebase.firestore());
 
-export function* addMessage({ payload }: OnAddMessageAction) {
-  yield put({ type: CHANGE_MESSAGE_INPUT, payload: '' });
-
-  yield call(
-    rsf.firestore.addDocument, MESSAGES_COLLECTION,
-    { content: payload, timestamp: new Date() }
-  );
-}
-
-export function* watchMessages() {
-  yield takeEvery(ON_ADD_MESSAGE, addMessage);
-  yield getMessages();
-}
-
 export function* getMessages() {
-  const query = firebase.firestore().collection(MESSAGES_COLLECTION).orderBy('timestamp', 'asc');
+  const chatRoomId = yield select(getChatRoomId);
+  const fieldPath = `${chatRoomId}/${MESSAGES_PATH}`;
+
+  const query = firebase.firestore().collection(fieldPath).orderBy('timestamp', 'asc');
   const messagesChannel = rsf.firestore.channel(query);
   
   while (true) {
@@ -54,4 +41,22 @@ export function* getMessages() {
       )
     });
   }
+}
+
+export function* addMessage({ payload }: Action<string>) {
+  yield put({ type: CHANGE_MESSAGE_INPUT, payload: '' });
+
+  const chatRoomId = yield select(getChatRoomId);
+  const fieldPath = `${chatRoomId}/${MESSAGES_PATH}`;
+
+  yield call(
+    rsf.firestore.addDocument,
+    firebase.firestore().collection(fieldPath),
+    { content: payload, timestamp: new Date() }
+  );
+}
+
+export function* watchMessages() {
+  yield takeEvery(SET_CHATROOM_ID, getMessages);
+  yield takeEvery(ON_ADD_MESSAGE, addMessage);
 }

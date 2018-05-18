@@ -1,0 +1,1 @@
+export const getChatRoomId = (state: ChatRoomState) => state.id;

@@ -12,7 +12,7 @@ export const { setChatRoomId, changeMessageInput, addMessageAction } =
   createActions<string | boolean, string>(
     {
       [SET_CHATROOM_ID]: chatRoomId => chatRoomId,
-      [CHANGE_MESSAGE_INPUT]: messageInput => messageInput
+      [CHANGE_MESSAGE_INPUT]: messageInput => messageInput,
     }
   );
 
