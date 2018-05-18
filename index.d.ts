@@ -1,0 +1,27 @@
+declare module '@firebase/app';
+declare module 'redux-saga-firebase';
+declare module 'react-contenteditable';
+declare module 'autoscroll-react';
+
+declare interface AppProps {
+    messages: Array<Message>;
+    messageInput: string;
+    onMessageChange: Function;
+    onAddMessage: Function;
+}
+
+declare interface ChatWindowProps {
+    messages: Array<Message>;
+}
+
+declare interface Message {
+    id: string;
+    content: string;
+    timestamp: number;
+}
+
+declare interface MessagesState {
+    messages: Array<Message>;
+    messageInput: string;
+    message: string | null;
+}
