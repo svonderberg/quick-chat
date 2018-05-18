@@ -2,8 +2,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { match } from 'react-router';
 import ChatWindow from './ChatWindow';
-import { setChatRoomId, changeMessageInput } from './data';
-import { ON_ADD_MESSAGE, ENTER_KEY } from './constants';
+import { setChatRoomId, changeMessageInput, addMessage } from './data';
+import { ENTER_KEY } from './constants';
 import './App.css';
 
 class ChatRoom extends React.Component<
@@ -48,7 +48,7 @@ const mapStateToProps = (state: ChatRoomState) => ({ ...state });
 const mapDispatchToProps = (dispatch: Function) => ({
   onReceieveChatRoomId: (id: string) => dispatch(setChatRoomId(id)),
   onMessageChange: (messageInput: string) => dispatch(changeMessageInput(messageInput)),
-  onAddMessage: (messageInput: string) => dispatch({ type: ON_ADD_MESSAGE, payload: messageInput })
+  onAddMessage: (messageInput: string) => dispatch(addMessage(messageInput))
 });
 
 const ConnectedChatRoomFunc = connect<ChatRoomState, ChatRoomDispatchProps>(mapStateToProps, mapDispatchToProps);

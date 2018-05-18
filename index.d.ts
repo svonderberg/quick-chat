@@ -15,7 +15,7 @@ declare interface ChatWindowProps {
 }
 
 declare interface Message {
-    id: string;
+    user: string;
     content: string;
     timestamp: number;
 }

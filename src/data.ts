@@ -5,14 +5,16 @@ import { watchMessages } from './sagas';
 import {
   SET_CHATROOM_ID,
   CHANGE_MESSAGE_INPUT,
-  REMOTE_UPDATE_MESSAGES
+  REMOTE_UPDATE_MESSAGES,
+  ADD_MESSAGE
 } from './constants';
 
-export const { setChatRoomId, changeMessageInput, addMessageAction } =
+export const { setChatRoomId, changeMessageInput, addMessage } =
   createActions<string | boolean, string>(
     {
       [SET_CHATROOM_ID]: chatRoomId => chatRoomId,
       [CHANGE_MESSAGE_INPUT]: messageInput => messageInput,
+      [ADD_MESSAGE]: messageContent => messageContent
     }
   );
 

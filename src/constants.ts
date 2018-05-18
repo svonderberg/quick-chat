@@ -2,10 +2,10 @@
 export const SET_CHATROOM_ID: string = 'setChatRoomId';
 export const REMOTE_UPDATE_MESSAGES: string = 'remoteUpdateMessages';
 export const CHANGE_MESSAGE_INPUT: string = 'changeMessageInput';
-export const ON_ADD_MESSAGE: string = 'onAddMessage';
+export const ADD_MESSAGE: string = 'addMessage';
 
 // firestore collection names
-export const MESSAGES_PATH = 'messages';
+export const ROOMS_COLLECTION: string = 'rooms';
 
 // keyboard keys
 export const ENTER_KEY = 'Enter';

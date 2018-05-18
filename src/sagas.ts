@@ -5,10 +5,10 @@ import ReduxSagaFirebase from 'redux-saga-firebase';
 import { Action } from 'redux-actions';
 import {
   SET_CHATROOM_ID,
-  ON_ADD_MESSAGE,
+  ADD_MESSAGE,
   REMOTE_UPDATE_MESSAGES,
   CHANGE_MESSAGE_INPUT,
-  MESSAGES_PATH
+  ROOMS_COLLECTION
 } from './constants';
 import { getChatRoomId } from './selectors';
 
@@ -24,19 +24,64 @@ const rsf = new ReduxSagaFirebase(firebaseApp, firebase.firestore());
 
 export function* getMessages() {
   const chatRoomId = yield select(getChatRoomId);
-  const fieldPath = `${chatRoomId}/${MESSAGES_PATH}`;
+  const collectionRef = firebase.firestore().collection(ROOMS_COLLECTION).where('id', '==', chatRoomId);
+  const chatRoomSnapshot = yield call(
+    rsf.firestore.getCollection,
+    collectionRef
+  );
 
-  const query = firebase.firestore().collection(fieldPath).orderBy('timestamp', 'asc');
-  const messagesChannel = rsf.firestore.channel(query);
+  let docRef;
+
+  // if this is a new chat room add the metadata/data structure
+  if (chatRoomSnapshot.empty) {
+    docRef = yield call(
+      rsf.firestore.addDocument,
+      ROOMS_COLLECTION,
+      {
+        id: chatRoomId,
+        users: [
+          {
+            id: 0,
+            username: 'User 1'
+          }
+        ],
+        messages: []
+      }
+    );
+  } else {
+    const docSnapshot = chatRoomSnapshot.docs[0];
+    docRef = docSnapshot.ref;
+
+    const currentUsers = docSnapshot.get('users');
+    const newUserNum = currentUsers.length + 1;
   
+    // yield put({
+    //   type: SET_USER_ID,
+    //   payload: newUserNum
+    // });
+
+    yield call(
+      rsf.firestore.updateDocument,
+      docRef,
+      {
+        users: currentUsers.concat({
+          id: newUserNum,
+          username: `User ${newUserNum}`
+        })
+      }
+    );
+  }
+
+  const messagesChannel = rsf.firestore.channel(docRef);
+
   while (true) {
-    const { docs } = yield take(messagesChannel);
+    const newDocSnapshot = yield take(messagesChannel);
 
     yield put({
       type: REMOTE_UPDATE_MESSAGES,
-      payload: docs.map(
-        (doc: firebase.firestore.DocumentData) => {
-          return { ...doc.data(), id: doc.id };
+      payload: newDocSnapshot.get('messages').map(
+        (message: Message) => {
+          return { ...message };
         }
       )
     });
@@ -47,16 +92,27 @@ export function* addMessage({ payload }: Action<string>) {
   yield put({ type: CHANGE_MESSAGE_INPUT, payload: '' });
 
   const chatRoomId = yield select(getChatRoomId);
-  const fieldPath = `${chatRoomId}/${MESSAGES_PATH}`;
+  const chatRoomSnapshot = yield call(
+    rsf.firestore.getCollection,
+    firebase.firestore().collection(ROOMS_COLLECTION).where('id', '==', chatRoomId)
+  );
+  const docSnapshot = chatRoomSnapshot.docs[0];
+  const currentMessages = docSnapshot.get('messages');
 
   yield call(
-    rsf.firestore.addDocument,
-    firebase.firestore().collection(fieldPath),
-    { content: payload, timestamp: new Date() }
+    rsf.firestore.updateDocument,
+    docSnapshot.ref,
+    {
+      messages: currentMessages.concat({
+        user: 0,
+        content: payload,
+        timestamp: new Date()
+      })
+    }
   );
 }
 
 export function* watchMessages() {
+  yield takeEvery(ADD_MESSAGE, addMessage);
   yield takeEvery(SET_CHATROOM_ID, getMessages);
-  yield takeEvery(ON_ADD_MESSAGE, addMessage);
 }
