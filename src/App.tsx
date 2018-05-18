@@ -1,41 +1,31 @@
 import * as React from 'react';
-import ChatWindow from './ChatWindow';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { hri } from 'human-readable-ids';
+import ChatRoom from './ChatRoom';
 import { connect } from 'react-redux';
-import { changeMessageInput } from './data';
-import { ON_ADD_MESSAGE, ENTER_KEY } from './constants';
 import './App.css';
 
-const App = ({
-  messages,
-  messageInput,
-  onMessageChange,
-  onAddMessage
-}: AppProps) =>
+const App = () =>
   (
     <div className="App">
-      <h3>Super Simple Chat</h3>
-      <ChatWindow messages={messages} />
-
-      <input
-        type="text"
-        placeholder="Message"
-        value={messageInput}
-        onChange={e => onMessageChange(e.target.value)}
-        onKeyDown={e => {
-          e.stopPropagation();
-          if (e.key === ENTER_KEY) { onAddMessage(messageInput); }
-        }}
-      />
-      <button onClick={e => onAddMessage(messageInput)}>Send</button>
+      <Router>
+        <div>
+          <Route
+            exact={true}
+            path="/"
+            render={() => (
+              <Redirect to={'/' + hri.random()} />
+            )}
+          />
+          <Route path="/:chatRoomId" component={ChatRoom} />
+        </div>
+      </Router>
     </div>
   );
 
-const mapStateToProps = (state: MessagesState) => ({ ...state });
 const mapDispatchToProps = (dispatch: Function) => ({
-  onMessageChange: (messageInput: string) => dispatch(changeMessageInput(messageInput)),
-  onAddMessage: (messageInput: string) => dispatch({ type: ON_ADD_MESSAGE, payload: messageInput })
 });
 
-const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
+const ConnectedApp = connect(null, mapDispatchToProps)(App);
 
 export default ConnectedApp;

@@ -2,10 +2,10 @@ declare module '@firebase/app';
 declare module 'redux-saga-firebase';
 declare module 'react-contenteditable';
 declare module 'autoscroll-react';
+declare module 'human-readable-ids';
 
-declare interface AppProps {
-    messages: Array<Message>;
-    messageInput: string;
+declare interface ChatRoomDispatchProps {
+    onReceieveChatRoomId: Function;
     onMessageChange: Function;
     onAddMessage: Function;
 }
@@ -20,7 +20,8 @@ declare interface Message {
     timestamp: number;
 }
 
-declare interface MessagesState {
+declare interface ChatRoomState {
+    id: string | null;
     messages: Array<Message>;
     messageInput: string;
     message: string | null;

@@ -3,32 +3,39 @@ import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { watchMessages } from './sagas';
 import {
+  SET_CHATROOM_ID,
   CHANGE_MESSAGE_INPUT,
   REMOTE_UPDATE_MESSAGES
 } from './constants';
 
-export const { changeMessageInput, addMessageAction } =
+export const { setChatRoomId, changeMessageInput, addMessageAction } =
   createActions<string | boolean, string>(
     {
+      [SET_CHATROOM_ID]: chatRoomId => chatRoomId,
       [CHANGE_MESSAGE_INPUT]: messageInput => messageInput
     }
   );
 
-const defaultState: MessagesState = { messages: [], messageInput: '', message: null };
+const defaultState: ChatRoomState = { id: null, messages: [], messageInput: '', message: null };
 
-const changeMessageInputReducer: Reducer<MessagesState, string> =
-  (state: MessagesState, { payload }: Action<string>): MessagesState =>
+const setChatRoomIdReducer: Reducer<ChatRoomState, string | null> =
+  (state: ChatRoomState, { payload }: Action<string>): ChatRoomState =>
+    ({ ...state, id: payload || null });
+
+const changeMessageInputReducer: Reducer<ChatRoomState, string> =
+  (state: ChatRoomState, { payload }: Action<string>): ChatRoomState =>
     ({ ...state, messageInput: payload || '' });
 
-const remoteUpdateMessagesReducer: Reducer<MessagesState, Array<Message>> =
-  (state: MessagesState, { payload }: Action<Array<Message>>) => ({...state, messages: payload || [] });
+const remoteUpdateMessagesReducer: Reducer<ChatRoomState, Array<Message>> =
+  (state: ChatRoomState, { payload }: Action<Array<Message>>) => ({...state, messages: payload || [] });
 
-const reducers: ReducerMap<MessagesState, string> = {
+const reducers: ReducerMap<ChatRoomState, string | null | Array<Message>> = {
+  [SET_CHATROOM_ID]: setChatRoomIdReducer,
   [CHANGE_MESSAGE_INPUT]: changeMessageInputReducer,
   [REMOTE_UPDATE_MESSAGES]: remoteUpdateMessagesReducer
 };
 
-const reducer = handleActions<MessagesState, string>(reducers, defaultState);
+const reducer = handleActions<ChatRoomState, string>(reducers, defaultState);
 const sagaMiddleware = createSagaMiddleware();
 const store = createStore(reducer, applyMiddleware(sagaMiddleware));
 
