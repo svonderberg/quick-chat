@@ -9,7 +9,7 @@ import {
   REMOTE_UPDATE_MESSAGES,
   CHANGE_MESSAGE_INPUT,
   ROOMS_COLLECTION,
-  SET_USER_ID
+  SET_USER
 } from './constants';
 import { getUserId, getChatRoomId } from './selectors';
 
@@ -33,15 +33,18 @@ export function* getMessages() {
 
   let docRef;
   let userId = 0;
+  let username = 'User 1';
+  let currentUsers = [];
 
   // if this is a new chat room add the metadata/data structure
   if (chatRoomSnapshot.empty) {
+    currentUsers = [username];
     docRef = yield call(
       rsf.firestore.addDocument,
       ROOMS_COLLECTION,
       {
         id: chatRoomId,
-        users: ['User 1'],
+        users: currentUsers,
         messages: []
       }
     );
@@ -49,29 +52,33 @@ export function* getMessages() {
     const docSnapshot = chatRoomSnapshot.docs[0];
     docRef = docSnapshot.ref;
 
-    const currentUsers = docSnapshot.get('users');
+    currentUsers = docSnapshot.get('users');
     userId = currentUsers.length;
+    username = `User ${userId + 1}`;
 
     yield call(
       rsf.firestore.updateDocument,
       docRef,
-      { users: currentUsers.concat(`User ${userId + 1}`) }
+      { users: currentUsers.concat(username) }
     );
   }
-  
-  yield put({ type: SET_USER_ID, payload: userId });
+
+  yield put({
+    type: SET_USER,
+    payload: { id: userId, username }
+  });
 
   const messagesChannel = rsf.firestore.channel(docRef);
 
   while (true) {
     const newDocSnapshot = yield take(messagesChannel);
-    const currentUsers = newDocSnapshot.get('users');
+    const latestUsers = newDocSnapshot.get('users');
   
     yield put({
       type: REMOTE_UPDATE_MESSAGES,
       payload: newDocSnapshot.get('messages').map(
         (message: Message) =>
-          ({ ...message, user: currentUsers[message.userId] })
+          ({ ...message, user: latestUsers[message.userId] })
       )
     });
   }

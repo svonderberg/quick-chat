@@ -3,7 +3,7 @@ import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { watchMessages } from './sagas';
 import {
-  SET_USER_ID,
+  SET_USER,
   SET_CHATROOM_ID,
   CHANGE_MESSAGE_INPUT,
   REMOTE_UPDATE_MESSAGES,
@@ -19,11 +19,19 @@ export const { setChatRoomId, changeMessageInput, addMessage } =
     }
   );
 
-const defaultState: ChatRoomState = { userId: 0, id: null, messages: [], messageInput: '', message: null };
+const defaultUser = { id: 0, username: 'User 1' };
 
-const setUserIdReducer: Reducer<ChatRoomState, number> =
-  (state: ChatRoomState, { payload }: Action<number>): ChatRoomState =>
-    ({ ...state, userId: payload });
+const defaultState: ChatRoomState = {
+  id: null,
+  user: defaultUser,
+  messages: [],
+  messageInput: '',
+  message: null
+};
+
+const setUserReducer: Reducer<ChatRoomState, User> =
+  (state: ChatRoomState, { payload }: Action<User>): ChatRoomState =>
+    ({ ...state, user: payload || defaultUser });
 
 const setChatRoomIdReducer: Reducer<ChatRoomState, string | null> =
   (state: ChatRoomState, { payload }: Action<string>): ChatRoomState =>
@@ -36,8 +44,8 @@ const changeMessageInputReducer: Reducer<ChatRoomState, string> =
 const remoteUpdateMessagesReducer: Reducer<ChatRoomState, Array<Message>> =
   (state: ChatRoomState, { payload }: Action<Array<Message>>) => ({...state, messages: payload || [] });
 
-const reducers: ReducerMap<ChatRoomState, string | null | number | Array<Message>> = {
-  [SET_USER_ID]: setUserIdReducer,
+const reducers: ReducerMap<ChatRoomState, string | null | User | Array<Message>> = {
+  [SET_USER]: setUserReducer,
   [SET_CHATROOM_ID]: setChatRoomIdReducer,
   [CHANGE_MESSAGE_INPUT]: changeMessageInputReducer,
   [REMOTE_UPDATE_MESSAGES]: remoteUpdateMessagesReducer

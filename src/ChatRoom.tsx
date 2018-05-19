@@ -17,6 +17,7 @@ class ChatRoom extends React.Component<
 
   render() {
       const {
+          user,
           messages,
           messageInput,
           onMessageChange,
@@ -26,8 +27,10 @@ class ChatRoom extends React.Component<
       return (
         <div className="App">
           <h3>Super Simple Chat</h3>
+          <p>Username: <input type="text" defaultValue={user.username} /></p>
+
           <ChatWindow messages={messages} />
-      
+
           <input
             type="text"
             placeholder="Message"
