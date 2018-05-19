@@ -8,6 +8,7 @@ declare interface ChatRoomDispatchProps {
     onReceieveChatRoomId: Function;
     onMessageChange: Function;
     onAddMessage: Function;
+    onChangeUsername: Function;
 }
 
 declare interface ChatWindowProps {
@@ -17,6 +18,7 @@ declare interface ChatWindowProps {
 declare interface User {
     id: number;
     username: string;
+    isTyping: boolean;
 }
 
 declare interface Message {
@@ -29,6 +31,7 @@ declare interface Message {
 declare interface ChatRoomState {
     id: string | null;
     user: User;
+    currentUsers: Array<User>;
     messages: Array<Message>;
     messageInput: string;
     message: string | null;
