@@ -7,8 +7,8 @@ class ChatWindow extends React.Component<ChatWindowProps> {
 
         return (
             <ul {...props}>
-                {messages.map(({ timestamp, content }) =>
-                    <li key={timestamp}>{content}</li>
+                {messages.map(({ timestamp, user, content }) =>
+                    <li key={timestamp}>{user}: {content}</li>
                 )}
             </ul>
         );

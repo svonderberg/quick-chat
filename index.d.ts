@@ -14,13 +14,20 @@ declare interface ChatWindowProps {
     messages: Array<Message>;
 }
 
+declare interface User {
+    id: string;
+    username: string;
+}
+
 declare interface Message {
-    user: string;
+    userId: number;
+    user?: User;
     content: string;
     timestamp: number;
 }
 
 declare interface ChatRoomState {
+    userId: number | undefined;
     id: string | null;
     messages: Array<Message>;
     messageInput: string;
