@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { match } from 'react-router';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ChatWindow from './ChatWindow';
 import { setChatRoomId, changeMessageInput, addMessage, changeUsername } from './data';
 import { ENTER_KEY } from './constants';
@@ -17,13 +18,13 @@ class ChatRoom extends React.Component<
 
   render() {
       const {
-          user,
-          currentUsers,
-          messages,
-          messageInput,
-          onMessageChange,
-          onAddMessage,
-          onChangeUsername
+        user,
+        currentUsers,
+        messages,
+        messageInput,
+        onMessageChange,
+        onAddMessage,
+        onChangeUsername
       } = this.props;
 
       const usernamesTyping =
@@ -51,8 +52,8 @@ class ChatRoom extends React.Component<
 
       return (
         <div className="App">
-          <h3>Super Simple Chat</h3>
-          <p>Username:
+          <h3>QuickChat</h3>
+          <p>Username:&nbsp;
             <input
               type="text"
               onChange={e => onChangeUsername(e.target.value)}
@@ -60,6 +61,13 @@ class ChatRoom extends React.Component<
               value={user.username}
             />
           </p>
+          <CopyToClipboard text={window.location}>
+            <button>Copy the link to this chat to the clipboard to invite others.</button>
+          </CopyToClipboard>
+
+          <ChatWindow messages={messages} />
+
+          <p>{usersTypingMessage}</p>
           {
             currentUsers.length - 1 === 0 ?
               <p>No one else is here, invite them by sending them the URL.</p> :
@@ -68,8 +76,6 @@ class ChatRoom extends React.Component<
                 {currentUsers.map(({ username }: User) => username).join(', ')}
               </p>
           }
-          <p>{usersTypingMessage}</p>
-          <ChatWindow messages={messages} />
 
           <input
             type="text"

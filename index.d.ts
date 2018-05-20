@@ -3,6 +3,7 @@ declare module 'redux-saga-firebase';
 declare module 'react-contenteditable';
 declare module 'autoscroll-react';
 declare module 'human-readable-ids';
+declare module 'react-copy-to-clipboard';
 
 declare interface ChatRoomDispatchProps {
     onReceieveChatRoomId: Function;
