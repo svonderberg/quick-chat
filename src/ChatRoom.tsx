@@ -11,8 +11,9 @@ class ChatRoom extends React.Component<
     ChatRoomDispatchProps &
     { match: match<{ chatRoomId: string }> }, {}
   > {
+
   componentDidMount() {
-    this.props.onReceieveChatRoomId(this.props.match.params.chatRoomId);
+    this.props.onReceieveChatRoomId(this.props.match.params.chatRoomId); 
   }
 
   render() {
@@ -68,6 +69,10 @@ class ChatRoom extends React.Component<
                 type="text"
                 onChange={e => onChangeUsername(e.target.value)}
                 onFocus={e => (e.target as HTMLInputElement).select()}
+                onKeyDown={e => {
+                  e.stopPropagation();
+                  if (e.key === ENTER_KEY) { (e.target as HTMLInputElement).blur(); }
+                }}
                 value={user.username}
               />
             </div>
@@ -79,11 +84,11 @@ class ChatRoom extends React.Component<
           />
 
           <div className="users-info">
-            <p>{usersTypingMessage}</p>
+            <p className="users-typing">{usersTypingMessage}</p>
             {
               currentUsers.length - 1 === 0 ?
-                <p>No one else is here, invite them by sending them the link.</p> :
-                <p>
+                <p className="users-list">No one else is here, invite them by sending them the link.</p> :
+                <p className="users-list">
                   {currentUsers.length} people chatting:&nbsp;
                   {currentUsers.map(({ username }: User) => username).join(', ')}
                 </p>

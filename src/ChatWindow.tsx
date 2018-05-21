@@ -1,6 +1,10 @@
 import * as React from 'react';
 import autoscroll from 'autoscroll-react';
- 
+import MarkdownIt from 'markdown-it';
+import renderHTML from 'react-render-html';
+
+const markdownRenderer = new MarkdownIt({ linkify: true });
+
 class ChatWindow extends React.Component<ChatWindowProps> {
     render() {
         const { currentUserId, messages, ...props } = this.props;
@@ -14,7 +18,13 @@ class ChatWindow extends React.Component<ChatWindowProps> {
                             ( idx === 0 || (userId !== messagesArray[idx - 1].userId) ) &&
                             <div className="message-username">{user}</div>
                         }
-                        <div className="message-content">{content}</div>
+                        <div className="message-content">
+                            {
+                                renderHTML(
+                                    markdownRenderer.renderInline(content)
+                                )
+                            }
+                        </div>
                     </div>
                 )}
             </div>

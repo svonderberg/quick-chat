@@ -11,12 +11,12 @@ const App = () =>
         <div>
           <Route
             exact={true}
-            path="/"
+            path="/quick-chat/"
             render={() => (
-              <Redirect to={'/' + hri.random()} />
+              <Redirect to={'/quick-chat/' + hri.random()} />
             )}
           />
-          <Route path="/:chatRoomId" component={ChatRoom} />
+          <Route path="/quick-chat/:chatRoomId" component={ChatRoom} />
         </div>
       </Router>
     </div>

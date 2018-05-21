@@ -10,17 +10,22 @@ body {
   font-size: .9em;
   padding: .5em;
   height: 100%;
+  background-color: #e1eef6;
 }
 
 header {
   display: flex;
-  align-items: baseline;
+  padding-bottom: 1em;
+}
+
+header > div {
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 h1 {
   margin: 0;
   display: inline-block;
-  flex-grow: 1;
 }
 
 h1 span:first-child {
@@ -31,10 +36,6 @@ h1 span:last-child {
   color: #47b8e0;
 }
 
-input {
-  font-size: 1em;
-}
-
 button {
   display: block;
   border: 0;
@@ -43,20 +44,7 @@ button {
   padding: .5em;
   font-size: .9em;
   height: 100%;
-}
-
-.chat-window {
-  padding: 0;
-  border: 1px solid #e3dede;
-  overflow-y: scroll;
-  position: relative;
-  flex-grow: 1;
-  padding: .5em;
-  margin-top: .5em;
-}
-
-.chat-window > div {
-  display: block;
+  cursor: pointer;
 }
 
 #root,
@@ -68,40 +56,75 @@ button {
 .quick-chat-app {
   max-width: 50em;
   margin: 0 auto;
-  display: flex;
   height: 100%;
-  flex-direction: column;
-  align-items: stretch;
-  align-content: stretch;
-  height: 100;
 }
 
 .title button {
-  margin-top: .5em;
+  margin-top: .75em;
 }
 
 .username {
   flex-grow: 1;
-  font-size: .8em;
   text-align: right;
+  margin-bottom: 0;
+}
+
+.username input {
+  text-align: right;
+  border: 0;
+  border: none;
+  margin-top: .25em;
+  background-color: #34314c;
+  color: white;
+  padding: .5em;
+  font-size: .9em;
 }
 
 .username p {
   margin: 0;
 }
 
-.username input {
-  font-size: 1.25em;
+.chat-window {
+  padding: 0;
+  border: 1px solid #e3dede;
+  overflow-y: scroll;
+  position: relative;
+  padding: .5em;
+  height: 70%;
+  min-height: 200px;
+  background-color: white;
 }
 
-.users-info,
+.users-info {
+  flex-direction: column;
+  margin: 0;
+}
+
+.users-typing,
+.users-list {
+  display: block;
+  padding: 0;
+  padding-bottom: 1em;
+  margin: 0;
+}
+
+.users-typing {
+  font-style: italic;
+  color: gray;
+  padding-top: .5em;
+  height: 1em;
+}
+
 .message-input-bar {
   display: flex;
-  margin-bottom: 1em;
+  height: 3em;
 }
 
 .message-input-bar input {
   flex-grow: 1;
+  padding-left: .5em;
+  font-size: .9em;
+  background-color: white;
 }
 
 .message-input-bar button {
@@ -113,15 +136,21 @@ button {
   background: #34314c;
   color: white;
   padding: .25em .5em;
-  border-radius: 1em;
+  text-align: left;
+  width: 30%;
   margin-top: 1em;
-  text-align: center;
 }
 
-.message-other {
-  text-align: right;
+.message-own:first-child .message-username,
+.message-other:first-child .message-username {
+  margin-top: 0;
 }
 
 .message-other .message-username {
   background-color: #47b8e0;
+}
+
+.message-content {
+  padding-top: .5em;
+  padding-left: .5em;
 }

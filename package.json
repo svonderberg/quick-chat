@@ -1,7 +1,8 @@
 {
-  "name": "super-simple-chat",
+  "name": "quick-chat",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://s3.us-east-2.amazonaws.com/quick-chat",
   "dependencies": {
     "@firebase/firestore": "^0.1.4",
     "@types/react-redux": "^5.0.9",
@@ -11,10 +12,12 @@
     "autoscroll-react": "^3.1.0",
     "firebase": "^4.6.2",
     "human-readable-ids": "^1.0.3",
+    "markdown-it": "^8.4.1",
     "react": "^15.6.1",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.6",
+    "react-render-html": "^0.6.0",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-scripts-ts": "2.7.0",
