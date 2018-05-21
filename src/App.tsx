@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { hri } from 'human-readable-ids';
 import ChatRoom from './ChatRoom';
 import { connect } from 'react-redux';
-import './App.css';
 
 const App = () =>
   (

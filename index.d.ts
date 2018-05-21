@@ -14,6 +14,7 @@ declare interface ChatRoomDispatchProps {
 
 declare interface ChatWindowProps {
     messages: Array<Message>;
+    currentUserId: number;
 }
 
 declare interface User {
@@ -24,7 +25,7 @@ declare interface User {
 
 declare interface Message {
     userId: number;
-    user?: User;
+    user: User;
     content: string;
     timestamp: number;
 }

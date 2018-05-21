@@ -5,7 +5,6 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ChatWindow from './ChatWindow';
 import { setChatRoomId, changeMessageInput, addMessage, changeUsername } from './data';
 import { ENTER_KEY } from './constants';
-import './App.css';
 
 class ChatRoom extends React.Component<
     ChatRoomState & 
@@ -51,43 +50,59 @@ class ChatRoom extends React.Component<
       }
 
       return (
-        <div className="App">
-          <h3>QuickChat</h3>
-          <p>Username:&nbsp;
+        <div className="quick-chat-app">
+          <header>
+            <div className="title">
+              <h1>
+                <span>Quick</span>
+                <span>Chat</span>
+              </h1>
+
+              <CopyToClipboard text={window.location}>
+                <button>Copy a link to this chat to the clipboard.</button>
+              </CopyToClipboard>
+            </div>
+            <div className="username">
+              <p>Your username<br />(click to change)</p>
+              <input
+                type="text"
+                onChange={e => onChangeUsername(e.target.value)}
+                onFocus={e => (e.target as HTMLInputElement).select()}
+                value={user.username}
+              />
+            </div>
+          </header>
+
+          <ChatWindow
+            messages={messages}
+            currentUserId={user.id}
+          />
+
+          <div className="users-info">
+            <p>{usersTypingMessage}</p>
+            {
+              currentUsers.length - 1 === 0 ?
+                <p>No one else is here, invite them by sending them the link.</p> :
+                <p>
+                  {currentUsers.length} people chatting:&nbsp;
+                  {currentUsers.map(({ username }: User) => username).join(', ')}
+                </p>
+            }
+          </div>
+
+          <div className="message-input-bar">
             <input
               type="text"
-              onChange={e => onChangeUsername(e.target.value)}
-              onFocus={e => (e.target as HTMLInputElement).select()}
-              value={user.username}
+              placeholder="Message"
+              value={messageInput}
+              onChange={e => onMessageChange(e.target.value)}
+              onKeyDown={e => {
+                e.stopPropagation();
+                if (e.key === ENTER_KEY) { onAddMessage(messageInput); }
+              }}
             />
-          </p>
-          <CopyToClipboard text={window.location}>
-            <button>Copy the link to this chat to the clipboard to invite others.</button>
-          </CopyToClipboard>
-
-          <ChatWindow messages={messages} />
-
-          <p>{usersTypingMessage}</p>
-          {
-            currentUsers.length - 1 === 0 ?
-              <p>No one else is here, invite them by sending them the URL.</p> :
-              <p>
-                {currentUsers.length} people chatting:&nbsp;
-                {currentUsers.map(({ username }: User) => username).join(', ')}
-              </p>
-          }
-
-          <input
-            type="text"
-            placeholder="Message"
-            value={messageInput}
-            onChange={e => onMessageChange(e.target.value)}
-            onKeyDown={e => {
-              e.stopPropagation();
-              if (e.key === ENTER_KEY) { onAddMessage(messageInput); }
-            }}
-          />
-          <button onClick={e => onAddMessage(messageInput)}>Send</button>
+            <button onClick={e => onAddMessage(messageInput)}>Send</button>
+          </div>
         </div>
       );
   }

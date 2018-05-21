@@ -1,5 +1,127 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
+
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: .9em;
+  padding: .5em;
+  height: 100%;
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+}
+
+h1 {
+  margin: 0;
+  display: inline-block;
+  flex-grow: 1;
+}
+
+h1 span:first-child {
+  color: #34314c;
+}
+
+h1 span:last-child {
+  color: #47b8e0;
+}
+
+input {
+  font-size: 1em;
+}
+
+button {
+  display: block;
+  border: 0;
+  background-color: #34314c;
+  color: white;
+  padding: .5em;
+  font-size: .9em;
+  height: 100%;
+}
+
+.chat-window {
   padding: 0;
-  font-family: sans-serif;
+  border: 1px solid #e3dede;
+  overflow-y: scroll;
+  position: relative;
+  flex-grow: 1;
+  padding: .5em;
+  margin-top: .5em;
+}
+
+.chat-window > div {
+  display: block;
+}
+
+#root,
+#root > div,
+#root > div > div {
+  height: 100%;
+}
+
+.quick-chat-app {
+  max-width: 50em;
+  margin: 0 auto;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  align-content: stretch;
+  height: 100;
+}
+
+.title button {
+  margin-top: .5em;
+}
+
+.username {
+  flex-grow: 1;
+  font-size: .8em;
+  text-align: right;
+}
+
+.username p {
+  margin: 0;
+}
+
+.username input {
+  font-size: 1.25em;
+}
+
+.users-info,
+.message-input-bar {
+  display: flex;
+  margin-bottom: 1em;
+}
+
+.message-input-bar input {
+  flex-grow: 1;
+}
+
+.message-input-bar button {
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+.message-username {
+  background: #34314c;
+  color: white;
+  padding: .25em .5em;
+  border-radius: 1em;
+  margin-top: 1em;
+  text-align: center;
+}
+
+.message-other {
+  text-align: right;
+}
+
+.message-other .message-username {
+  background-color: #47b8e0;
 }
