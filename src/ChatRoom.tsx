@@ -13,6 +13,8 @@ class ChatRoom extends React.Component<
   > {
 
   componentDidMount() {
+    // trigger saga to pull current chat room data off Firebase using
+    // chat room ID from URL as provided by react-router
     this.props.onReceieveChatRoomId(this.props.match.params.chatRoomId); 
   }
 
@@ -27,11 +29,14 @@ class ChatRoom extends React.Component<
         onChangeUsername
       } = this.props;
 
+      // determine usernames of those typing by mapping user IDs to usernames -
+      // this could be made a selector if needed
       const usernamesTyping =
         currentUsers
           .filter((currentUser: User) => currentUser.isTyping && (currentUser.id !== user.id))
           .map(({ username }: User) => username);
 
+      // determine correct language for 'Users typing' message depending on how many are
       let usersTypingMessage = '';
       if (usernamesTyping.length > 0) {
         switch (usernamesTyping.length) {
@@ -71,6 +76,8 @@ class ChatRoom extends React.Component<
                 onFocus={e => (e.target as HTMLInputElement).select()}
                 onKeyDown={e => {
                   e.stopPropagation();
+
+                  // blur on Enter key pressed to dismiss keyboard on mobile
                   if (e.key === ENTER_KEY) { (e.target as HTMLInputElement).blur(); }
                 }}
                 value={user.username}
@@ -103,6 +110,8 @@ class ChatRoom extends React.Component<
               onChange={e => onMessageChange(e.target.value)}
               onKeyDown={e => {
                 e.stopPropagation();
+
+                // trigger saga to add message to Firebase on Enter key down
                 if (e.key === ENTER_KEY) { onAddMessage(messageInput); }
               }}
             />

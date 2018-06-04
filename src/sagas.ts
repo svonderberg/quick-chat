@@ -15,6 +15,7 @@ import {
 } from './constants';
 import { getUserId, getChatRoomId } from './selectors';
 
+// firebase and redux-saga-firebase setup
 const firebaseApp = firebase.initializeApp({
   apiKey: 'AIzaSyDj3_C5H-OrosfFgWakDBypMkHcaunyj1A',
   authDomain: 'super-simple-chat.firebaseapp.com',
@@ -25,8 +26,11 @@ const firebaseApp = firebase.initializeApp({
 });
 const rsf = new ReduxSagaFirebase(firebaseApp, firebase.firestore());
 
+// utility function for returning current chat room data collection
 function* getChatRoomCollectionSnapshot() {
   const chatRoomId = yield select(getChatRoomId);
+
+  // find chat room through Firebase query on the chat room ID property
   const collectionRef = firebase.firestore().collection(ROOMS_COLLECTION).where('id', '==', chatRoomId);
   const chatRoomDocSnapshot = yield call(
     rsf.firestore.getCollection,
@@ -35,6 +39,7 @@ function* getChatRoomCollectionSnapshot() {
   return chatRoomDocSnapshot;
 }
 
+// utility function for returning current chat room data document
 function* getChatRoomDocSnapshot() {
   const chatRoomCollectionSnapshot = yield call(getChatRoomCollectionSnapshot);
   return chatRoomCollectionSnapshot.docs[0];
@@ -63,6 +68,7 @@ export function* getMessages() {
       }
     );
   } else {
+    // the returned Firebase snapshot was not empty so this is an existing chat room
     const docSnapshot = chatRoomSnapshot.docs[0];
     docRef = docSnapshot.ref;
 
@@ -70,6 +76,7 @@ export function* getMessages() {
     userId = currentUsers.length;
     username = `User ${userId + 1}`;
 
+    // add this newly connected user
     yield call(
       rsf.firestore.updateDocument,
       docRef,
@@ -77,11 +84,13 @@ export function* getMessages() {
     );
   }
 
+  // set user ID in global redux store
   yield put({
     type: SET_USER,
     payload: { id: userId, username }
   });
 
+  // watch for changes in chat room document on Firebase
   yield call(watchMessagesAndUsers, docRef);
 }
 
@@ -91,7 +100,8 @@ function* watchMessagesAndUsers(docRef: firebase.firestore.DocumentReference) {
   while (true) {
     const newDocSnapshot = yield take(messagesChannel);
     const latestUsers = newDocSnapshot.get('users');
-  
+
+    // place new messages from Firebase update in store
     yield put({
       type: REMOTE_UPDATE_MESSAGES,
       payload: newDocSnapshot.get('messages').map(
@@ -100,17 +110,20 @@ function* watchMessagesAndUsers(docRef: firebase.firestore.DocumentReference) {
       )
     });
 
+    // update which users are typing - this could be improved by testing for whether the users typing has changed
     const usersTyping: Array<number> = newDocSnapshot.get('usersTyping');
     yield put({
       type: REMOTE_UPDATE_USERS,
       payload: newDocSnapshot.get('users').map(
-        (username: string, idx: number) => ({ id: idx, username, isTyping: usersTyping.indexOf(idx) !== -1 })
+        (username: string, idx: number) =>
+          ({ id: idx, username, isTyping: usersTyping.indexOf(idx) !== -1 })
       )
     });
   }
 }
 
 export function* addMessage({ payload }: Action<string>) {
+  // clear message input box on adding the new message
   yield put({ type: CHANGE_MESSAGE_INPUT, payload: '' });
 
   const docSnapshot = yield call(getChatRoomDocSnapshot);
@@ -118,6 +131,7 @@ export function* addMessage({ payload }: Action<string>) {
 
   const userId = yield select(getUserId);  
 
+  // update Firebase document with new message
   yield call(
     rsf.firestore.updateDocument,
     docSnapshot.ref,
@@ -131,6 +145,7 @@ export function* addMessage({ payload }: Action<string>) {
   );
 }
 
+// update users array with new username in Firebase
 export function* changeUsername({ payload }: Action<string>) {
   const docSnapshot = yield call(getChatRoomDocSnapshot);
   const currentUsers = docSnapshot.get('users');
@@ -152,6 +167,8 @@ function* setUserIsTyping(isTyping: boolean = true): IterableIterator<Effect | P
 
   const userId = yield select(getUserId);  
 
+  // add this user's ID to the current users typing array if not present
+  // and the user is typing and vice versa
   let updatedUsersTyping = currentUsersTyping.concat();
   if (isTyping && currentUsersTyping.indexOf(userId) === -1) {
     updatedUsersTyping = updatedUsersTyping.concat(userId);
@@ -166,6 +183,8 @@ function* setUserIsTyping(isTyping: boolean = true): IterableIterator<Effect | P
   );
 }
 
+// set that the user is typing if there is anything besides an empty string
+// in the message input box
 function* checkIsUserTyping({ payload }: Action<string>) {
   yield call(setUserIsTyping, payload !== '');
 }

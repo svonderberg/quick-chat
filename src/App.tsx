@@ -9,6 +9,8 @@ const App = () =>
     <div className="App">
       <Router>
         <div>
+          {/* Loading root path means no chat room ID has been
+              specified so create a new one by redirecting to a random ID.  */}
           <Route
             exact={true}
             path="/"
@@ -16,15 +18,13 @@ const App = () =>
               <Redirect to={'/' + hri.random()} />
             )}
           />
+          {/* Pull the specified chat room ID from the requested URL. */}
           <Route path="/:chatRoomId" component={ChatRoom} />
         </div>
       </Router>
     </div>
   );
 
-const mapDispatchToProps = (dispatch: Function) => ({
-});
-
-const ConnectedApp = connect(null, mapDispatchToProps)(App);
+const ConnectedApp = connect()(App);
 
 export default ConnectedApp;

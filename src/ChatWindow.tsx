@@ -10,9 +10,13 @@ class ChatWindow extends React.Component<ChatWindowProps> {
         const { currentUserId, messages, ...props } = this.props;
 
         return (
+            // props need to be passed down via the spread operator for the autoscroll library to work correctly
             <div className="chat-window" {...props}>
                 {messages.map(({ timestamp, user, userId, content }: Message, idx: number, messagesArray: Message[]) =>
-                    <div key={timestamp} className={currentUserId === userId ? 'message-own' : 'message-other'}>
+                    <div
+                        key={timestamp}
+                        className={currentUserId === userId ? 'message-own' : 'message-other'}
+                    >
                         {
                             // only show user if previous message wasn't by the same user
                             ( idx === 0 || (userId !== messagesArray[idx - 1].userId) ) &&
